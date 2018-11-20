@@ -1,21 +1,27 @@
 import sys
 
-args = sys.argv[1]
+def tokenize(str_arg):
+    """
+    Convert a string of characters into a list of tokens. Adds spaces around each parentheses so as to get distinct pairs of character sets to split
+    """
+    return str_arg.replace("(", "( ").replace(")", " )").split(" ")
 
-def transform_to_array(my_str):
-    return my_str.replace("(", "( ").replace(")", " )").split(" ")
 
-def extract(transformed_array):
-    if len(transformed_array) == 0:
+def read_from_token(token_list):
+    """
+    Read an expression from a sequence of tokens.
+    """
+    if len(token_list) == 0:
         raise EOFError
 
-    first_member = transformed_array.pop(0)
+    first_member = token_list.pop(0)
 
     if first_member == "(":
         passed = []
-        while transformed_array[0] != ")":
-            passed.append(extract(transformed_array))
-        transformed_array.pop(0)
+        while token_list[0] != ")":
+            passed.append(read_from_token(token_list))
+            # remove )
+        token_list.pop(0)
         return passed
     elif first_member == ")":
         raise EOFError
@@ -23,9 +29,13 @@ def extract(transformed_array):
         return get_atom(first_member)
 
 
-def get_atom(any_object):
+def get_atom(token):
+    """
+    Numbers become integers.
+    Every other token is an expression symbol.
+    """
     try:
-        a = int(any_object)
+        a = int(token)
         return a
     except ValueError:
         return any_object
@@ -33,23 +43,31 @@ def get_atom(any_object):
 
 operations = dict({'add': lambda a,b: a + b, 'multiply': lambda a,b: a * b })
 
-def evaluate(any_object):
+def evaluate(expr):
+     """
+     We either get an int if argument is int or from result of evaluating list or we get a list/array
+     """
 
-    if type(any_object) is int:
-        return any_object
 
-    print(len(any_object))
-    func = operations[any_object[0]]
-    left = any_object[1]
-    right = any_object[2]
+    if type(expr) is int:
+        return expr
+
+    # evaluate left and right with operation as array's first string value key in operations dictionary/map
+    func = operations[expr[0]]
+    left = expr[1]
+    right = expr[2]
 
     return func(evaluate(left), evaluate(right))
 
 
+if len(sys.argv) < 2:
+    help = """
+  Usage: sexpr-calc <n>
+    eg.sexpr-calc.py "(add (multiply 75 4.5) 5)"
+  """
+    print(help)
+else:
+    tokenized = tokenize(str_arg = sys.argv[1])
+    atom = read_from_token(token_list = tokenized)
+    print(evaluate(expr=atom))
 
-str_list = transform_to_array(my_str=args)
-
-extracted = extract(str_list)
-
-result = evaluate(extracted)
-print(result)
