@@ -38,7 +38,7 @@ def get_atom(token):
         a = int(token)
         return a
     except ValueError:
-        return any_object
+        return token
 
 
 operations = dict({'add': lambda a,b: a + b, 'multiply': lambda a,b: a * b })
