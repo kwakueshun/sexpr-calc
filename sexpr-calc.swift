@@ -72,35 +72,24 @@ func atom(token: String) -> Any {
 // Custom function signature for generic binary operation
 typealias Operation = (Int, Int) -> Int
 
-let add: Operation = {(a, b) in a + b}
-let subtract: Operation = {(a, b) in a - b}
-let multiply: Operation = {(a, b) in a * b}
-let divide: Operation = {(a, b) in a / b}
-
-var opMap: Dictionary<String, Operation> = [
-   "add": add,
-   "subtract": subtract,
-   "multiply": multiply,
-   "divide": divide
+let operations: Dictionary<String, Operation> = [
+    "add": (+),
+    "subtract": (-),
+    "multiply": (*),
+    "divide": (/)
 ]
 
-func evaluate(x: Any) -> Int {
- if x is Int {
-   return x as! Int
- }
-
- // because we either get an int if argument is int or from result of evaluating list
-
- // or we get a list/array
-
- // evaluate left and right with operation as array's first string value key in operations dictionary/map
-  
- let listExpr = x as! Array<Any>
- let opFxn = opMap[(listExpr[0] as! String).lowercased()]
- let left = listExpr[1]
- let right = listExpr[2]
-
- return opFxn!(evaluate(x: left), evaluate(x: right))
+func evaluate(_ x: Any) -> Int {
+    if let x = x as? Int {
+        return x
+    }
+    
+    let list = x as! [Any]
+    let left = list[1]
+    let right = list[2]
+    let operation = operations[list[0] as! String]
+    
+    return operation!(evaluate(left), evaluate(right))
 }
 
 
