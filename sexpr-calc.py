@@ -14,19 +14,19 @@ def read_from_token(token_list):
     if len(token_list) == 0:
         raise EOFError
 
-    first_member = token_list.pop(0)
+    token = token_list.pop(0)
 
-    if first_member == "(":
+    if token == "(":
         passed = []
         while token_list[0] != ")":
             passed.append(read_from_token(token_list))
             # remove )
         token_list.pop(0)
         return passed
-    elif first_member == ")":
+    elif token == ")":
         raise EOFError
     else:
-        return get_atom(first_member)
+        return get_atom(token)
 
 
 def get_atom(token):
